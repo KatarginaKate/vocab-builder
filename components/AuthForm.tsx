@@ -21,11 +21,14 @@ type AuthFormProps = {
 const passwordPattern = /^(?=.*[A-Za-z]{6})(?=.*\d)[A-Za-z\d]{7}$/;
 const emailPattern = /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/;
 
-function makeSchema(mode: AuthFormProps["mode"]) {
+function makeSchema(mode: AuthFormProps["mode"]): yup.ObjectSchema<FormValues> {
+  const nameSchema =
+    mode === "register"
+      ? yup.string().trim().required("Name is required.")
+      : yup.string().trim().optional();
+
   return yup.object({
-    ...(mode === "register"
-      ? { name: yup.string().trim().required("Name is required.") }
-      : {}),
+    name: nameSchema,
     email: yup
       .string()
       .required("Email is required.")
