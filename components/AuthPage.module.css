@@ -1,0 +1,367 @@
+.page {
+  position: relative;
+  overflow: hidden;
+  min-height: 100vh;
+  background: #f8f8f8;
+  color: #171c1a;
+}
+
+.page::after {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  background: linear-gradient(
+    to bottom right,
+    rgb(248 248 248 / 0%) 57%,
+    #eaf0ed 79%,
+    #b7cec6 100%
+  );
+  content: "";
+  pointer-events: none;
+}
+
+.shell {
+  position: relative;
+  z-index: 1;
+  width: min(100% - 80px, 1240px);
+  min-height: 100vh;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  min-height: 94px;
+  display: flex;
+  align-items: center;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.4px;
+}
+
+.brandMark {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 5px;
+  border-radius: 50%;
+  background: #86aaa0;
+  transform: rotate(45deg);
+}
+
+.brandMark i {
+  flex: 0 0 calc(50% - 1px);
+  height: calc(50% - 1px);
+  border-radius: 100% 100% 4px 100%;
+  background: #fff;
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 80px;
+  padding: 28px 0 70px;
+}
+
+.formColumn {
+  width: 100%;
+  min-width: 0;
+  flex: 0 1 628px;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.formCard {
+  width: 100%;
+  min-height: 592px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding: 48px 64px;
+  border-radius: 30px;
+  background: rgba(133, 170, 159, 0.1);
+}
+
+.loginCard {
+  min-height: 518px;
+}
+
+.formCard h1 {
+  margin-bottom: 20px;
+  font-weight: 600;
+  font-size: 40px;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--black);
+}
+
+.intro {
+  max-width: 500px;
+  margin-bottom: 32px;
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 1.5;
+  color: rgba(18, 20, 23, 0.8);
+}
+
+.switchPrompt {
+  margin-top: 16px;
+  color: #747b78;
+  font-size: 12px;
+  text-align: center;
+}
+
+.switchPrompt a {
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 1.5;
+  text-decoration: underline;
+  text-decoration-skip-ink: none;
+  color: rgba(18, 20, 23, 0.5);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+@media (max-width: 1200px) {
+  .content {
+    gap: 40px;
+  }
+
+  .formColumn,
+  .illustration {
+    flex: 1 1 0;
+  }
+
+  .formCard {
+    min-height: 560px;
+  }
+}
+
+@media (max-width: 900px) {
+  .shell {
+    width: min(100% - 48px, 760px);
+  }
+
+  .header {
+    min-height: 80px;
+  }
+
+  .content {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 36px;
+    padding: 28px 0 48px;
+  }
+
+  .formColumn {
+    flex: 0 0 auto;
+  }
+
+  .formCard {
+    height: auto;
+    min-height: 0;
+    padding: 40px 48px;
+    border-radius: 20px;
+  }
+
+  .formCard h1 {
+    font-size: 34px;
+  }
+
+  .intro {
+    font-size: 18px;
+  }
+
+  .illustration {
+    flex: 0 0 auto;
+    align-self: center;
+    width: min(100%, 498px);
+    max-height: none;
+    overflow: visible;
+    transform: none;
+  }
+
+  .image {
+    width: 100%;
+  }
+}
+
+.illustration {
+  min-width: 0;
+  flex: 1 1 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: min(100%, 498px);
+  transform: translate(10px, 10px);
+}
+
+.imageCrop {
+  width: 100%;
+  aspect-ratio: 498 / 435;
+  overflow: hidden;
+}
+
+.image {
+  position: relative;
+  display: block;
+  width: 100%;
+  max-width: 512px;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+  fill: linear-gradient(
+    286.84deg,
+    rgba(133, 170, 159, 0.51) 23.19%,
+    rgba(255, 255, 255, 0) 60.01%
+  );
+}
+
+.illustrationText {
+  margin-top: 16px;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.5;
+  text-align: center;
+  color: rgba(18, 20, 23, 0.8);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.illustrationText span {
+  padding: 0 5px;
+  color: #86aaa0;
+}
+
+@media (min-width: 1440px) {
+  .shell {
+    width: min(100% - 120px, 1320px);
+  }
+
+  .illustration {
+    transform: none;
+  }
+}
+
+@media (max-width: 650px) {
+  .shell {
+    width: min(100% - 40px, 460px);
+  }
+
+  .header {
+    min-height: 72px;
+  }
+
+  .content {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 20px;
+    padding: 27px 0 35px;
+  }
+
+  .formCard {
+    width: 100%;
+    padding: 28px 24px;
+    border-radius: 19px;
+  }
+
+  .formCard h1 {
+    font-size: 30px;
+  }
+
+  .intro {
+    font-size: 16px;
+    margin-bottom: 20px;
+  }
+}
+
+@media (max-width: 374px) {
+  .shell {
+    width: calc(100% - 32px);
+  }
+
+  .formCard {
+    padding: 24px 20px;
+  }
+
+  .formCard h1 {
+    font-size: 28px;
+  }
+
+  .intro {
+    font-size: 15px;
+  }
+}
+
+@media (min-width: 901px) {
+  .page {
+    min-height: 100vh;
+  }
+
+  .shell {
+    min-height: 100vh;
+  }
+
+  .content {
+    padding-block: 0;
+  }
+
+  .formCard {
+    min-height: min(592px, calc(100vh - 130px));
+  }
+
+  .loginCard {
+    min-height: min(518px, calc(100vh - 130px));
+  }
+
+  .illustration {
+    width: min(100%, 498px, calc(100vh - 160px));
+    transform: none;
+  }
+
+  .imageCrop {
+    position: relative;
+    top: -48px;
+  }
+
+  .illustrationText {
+    position: relative;
+    top: -48px;
+  }
+}
+
+@media (min-width: 901px) and (max-width: 1200px) {
+  .formCard {
+    min-height: min(560px, calc(100vh - 130px));
+  }
+}
+
+@media (max-width: 1200px) {
+  .page,
+  .shell {
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .content {
+    padding: 28px 0 40px;
+  }
+
+  .formCard,
+  .loginCard {
+    height: auto;
+  }
+}

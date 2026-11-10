@@ -1,0 +1,147 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  font: inherit;
+}
+
+.field input {
+  width: 100%;
+  height: 56px;
+  border: 1px solid rgba(18, 20, 23, 0.1);
+  border-radius: 15px;
+  padding: 0 18px;
+  outline: none;
+  background: transparent;
+  font: inherit;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--black);
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.field input::placeholder {
+  color: var(--black);
+}
+
+.field input:-webkit-autofill,
+.field input:-webkit-autofill:hover,
+.field input:-webkit-autofill:focus,
+.field input:autofill {
+  -webkit-box-shadow: 0 0 0 1000px #edf0ef inset;
+  box-shadow: 0 0 0 1000px #edf0ef inset;
+  -webkit-text-fill-color: var(--black);
+  caret-color: var(--black);
+}
+
+.field input:focus {
+  border-color: #86aaa0;
+  box-shadow: 0 0 0 3px rgb(134 170 160 / 16%);
+}
+
+.field input[aria-invalid="true"] {
+  border-color: #e76a6a;
+}
+
+.field small {
+  color: #d44d4d;
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.passwordInput {
+  position: relative;
+}
+
+.passwordInput input {
+  padding-right: 46px;
+}
+
+.eyeButton {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateY(-50%);
+  border: 0;
+  background: transparent;
+  color: #202522;
+  cursor: pointer;
+}
+
+.eyeButton svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+}
+
+.submitButton {
+  min-height: 60px;
+  margin-top: 3px;
+  border: 0;
+  border-radius: 30px;
+  background: var(--green);
+  font: inherit;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 1.56;
+  color: var(--white);
+  cursor: pointer;
+  transition:
+    background 150ms ease,
+    opacity 150ms ease;
+}
+
+.submitButton:hover:not(:disabled) {
+  background: #70968b;
+}
+
+.submitButton:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.errorNotice,
+.successNotice {
+  border-radius: 9px;
+  padding: 10px 12px;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.errorNotice {
+  border: 1px solid #f4caca;
+  background: #fff5f5;
+  color: #b43e3e;
+}
+
+.successNotice {
+  border: 1px solid #cce5d6;
+  background: #f2faf5;
+  color: #328354;
+}
+
+@media (max-width: 520px) {
+  .form {
+    gap: 13px;
+  }
+
+  .field input {
+    height: 56px;
+  }
+}
