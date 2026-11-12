@@ -16,9 +16,9 @@ const fixelDisplay = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "VocabBuilder — вивчай нові слова щодня",
+  title: "VocabBuilder — Learn new words every day",
   description:
-    "Вивчай англійську у власному темпі, знаходь потрібні слова та відстежуй свій прогрес із VocabBuilder.",
+    "Learn English at your own pace, find the words you need, and track your progress with VocabBuilder.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

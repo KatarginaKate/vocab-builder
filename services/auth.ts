@@ -1,6 +1,9 @@
-const API_BASE_URL =
+const configuredApiUrl = (
+  process.env.NEXT_PUBLIC_API_URL ??
   process.env.NEXT_PUBLIC_API_BASE_URL ??
-  "https://vocab-builder-backend.p.goit.global/api";
+  "https://vocab-builder-backend.p.goit.global/api"
+).trim().replace(/\/+$/, "");
+const API_BASE_URL = configuredApiUrl.replace(/\/api-docs$/i, "/api");
 
 export type AuthPayload = {
   name?: string;
@@ -27,13 +30,13 @@ export async function authenticate(
   if (!response.ok) {
     const errorBody = await response.json().catch(() => null);
     const message =
-      typeof errorBody?.message === "string"
+      typeof errorBody?.message === "string" && !/[\u0400-\u04FF]/.test(errorBody.message)
         ? errorBody.message
         : response.status === 409
-          ? "Користувач із такою електронною поштою вже існує."
+          ? "An account with this email already exists."
           : response.status === 401
-            ? "Неправильна електронна пошта або пароль."
-            : "Не вдалося виконати запит. Спробуйте ще раз.";
+            ? "Incorrect email or password."
+            : "The request failed. Please try again.";
 
     throw new Error(message);
   }
@@ -57,6 +60,34 @@ export type WordPage = {
   perPage: number;
 };
 
+export type WordInput = {
+  en: string;
+  ua: string;
+  category: string;
+  isIrregular?: boolean;
+};
+
+async function authorizedMutation(path: string, token: string, method: string, payload?: unknown) {
+  const response = await fetch(`${API_BASE_URL}${path}`, {
+    method,
+    headers: {
+      Authorization: `Bearer ${token}`,
+      ...(payload ? { "Content-Type": "application/json" } : {}),
+    },
+    body: payload ? JSON.stringify(payload) : undefined,
+    cache: "no-store",
+  });
+  if (!response.ok) {
+    if (response.status === 401) throw new Error("SESSION_EXPIRED");
+    const body = await response.json().catch(() => null);
+    const message = typeof body?.message === "string" && !/[\u0400-\u04FF]/.test(body.message)
+      ? body.message
+      : "Could not save your changes. Please try again.";
+    throw new Error(message);
+  }
+  return response.status === 204 ? null : response.json().catch(() => null);
+}
+
 async function authorizedFetch(path: string, token: string) {
   const response = await fetch(`${API_BASE_URL}${path}`, {
     headers: { Authorization: `Bearer ${token}` },
@@ -67,7 +98,7 @@ async function authorizedFetch(path: string, token: string) {
     if (response.status === 401) {
       throw new Error("SESSION_EXPIRED");
     }
-    throw new Error("Не вдалося завантажити словник. Спробуйте ще раз.");
+    throw new Error("Could not load your dictionary. Please try again.");
   }
 
   return response.json();
@@ -75,12 +106,31 @@ async function authorizedFetch(path: string, token: string) {
 
 export function getOwnWords(
   token: string,
-  params: { keyword?: string; category?: string } = {},
+  params: { keyword?: string; category?: string; isIrregular?: boolean; page?: number; limit?: number } = {},
 ) {
-  const search = new URLSearchParams({ page: "1", limit: "20" });
+  const search = new URLSearchParams({ page: String(params.page ?? 1), limit: String(params.limit ?? 10) });
   if (params.keyword) search.set("keyword", params.keyword);
   if (params.category) search.set("category", params.category);
+  if (params.category === "verb" && params.isIrregular !== undefined) {
+    search.set("isIrregular", String(params.isIrregular));
+  }
   return authorizedFetch(`/words/own?${search.toString()}`, token) as Promise<WordPage>;
+}
+
+export function createWord(token: string, payload: WordInput) {
+  return authorizedMutation("/words", token, "POST", payload);
+}
+
+export function updateWord(token: string, id: string, payload: WordInput) {
+  return authorizedMutation(`/words/${id}`, token, "PATCH", payload);
+}
+
+export function deleteWord(token: string, id: string) {
+  return authorizedMutation(`/words/${id}`, token, "DELETE");
+}
+
+export function getWordStatistics(token: string) {
+  return authorizedFetch("/words/statistics", token) as Promise<{ totalCount?: number; wordsToLearn?: number; [key: string]: unknown }>;
 }
 
 export function getWordCategories(token: string) {
@@ -93,6 +143,6 @@ export async function signOut(token: string) {
     headers: { Authorization: `Bearer ${token}` },
   });
   if (!response.ok && response.status !== 401) {
-    throw new Error("Не вдалося завершити сеанс.");
+    throw new Error("Could not sign out.");
   }
 }

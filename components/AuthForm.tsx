@@ -75,7 +75,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
       setServerError(
         error instanceof Error
           ? error.message
-          : "Сталася помилка. Спробуйте ще раз.",
+          : "Something went wrong. Please try again.",
       );
     }
   };
@@ -121,7 +121,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
             className={styles.eyeButton}
             type="button"
             onClick={() => setShowPassword((visible) => !visible)}
-            aria-label={showPassword ? "Приховати пароль" : "Показати пароль"}
+            aria-label={showPassword ? "Hide password" : "Show password"}
             aria-pressed={showPassword}
           >
             <svg viewBox="0 0 32 32" aria-hidden="true">
