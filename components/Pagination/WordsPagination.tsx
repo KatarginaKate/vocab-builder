@@ -1,5 +1,5 @@
-import styles from "../app/dictionary/page.module.css";
-import SpriteIcon from "./SpriteIcon";
+import styles from "./WordsPagination.module.css";
+import SpriteIcon from "../../components/Icons/SpriteIcon";
 
 export default function WordsPagination({ page, totalPages, onPageChange }: {
   page: number;

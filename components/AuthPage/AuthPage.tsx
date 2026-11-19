@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import AuthForm from "@/components/AuthForm";
+import AuthForm from "@/components/AuthForm/AuthForm";
 import styles from "./AuthPage.module.css";
 
 type AuthPageProps = {

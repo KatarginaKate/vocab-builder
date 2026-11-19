@@ -118,15 +118,15 @@ export function getOwnWords(
 }
 
 export function createWord(token: string, payload: WordInput) {
-  return authorizedMutation("/words", token, "POST", payload);
+  return authorizedMutation("/words/create", token, "POST", payload);
 }
 
 export function updateWord(token: string, id: string, payload: WordInput) {
-  return authorizedMutation(`/words/${id}`, token, "PATCH", payload);
+  return authorizedMutation(`/words/edit/${id}`, token, "PATCH", payload);
 }
 
 export function deleteWord(token: string, id: string) {
-  return authorizedMutation(`/words/${id}`, token, "DELETE");
+  return authorizedMutation(`/words/delete/${id}`, token, "DELETE");
 }
 
 export function getWordStatistics(token: string) {

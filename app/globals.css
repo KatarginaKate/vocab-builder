@@ -5,6 +5,7 @@
   --green: #85aa9f;
   --white: #fcfcfc;
   --white-1: #f8f8f8;
+  --font-family: var(--font-fixel-display), Arial, Helvetica, sans-serif;
 }
 
 html {

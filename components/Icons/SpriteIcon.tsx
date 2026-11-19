@@ -11,12 +11,14 @@ type SpriteIconName =
   | "icon-menu"
   | "icon-user"
   | "icon-pen-black"
-  | "icon-trash-black";
+  | "icon-trash-black"
+  | "icon-flag-gb"
+  | "icon-flag-ua";
 
 export default function SpriteIcon({ name, className }: { name: SpriteIconName; className?: string }) {
   return (
-    <svg className={className} viewBox={name.endsWith("black") ? "0 0 32 32" : "0 0 24 24"} aria-hidden="true" focusable="false">
-      <use href={`/sprite.svg#${name}`} />
+    <svg className={className} viewBox={name.endsWith("black") || name.startsWith("icon-flag-") ? "0 0 32 32" : "0 0 24 24"} aria-hidden="true" focusable="false">
+      <use href={`/icons/sprite.svg?v=flags#${name}`} />
     </svg>
   );
 }

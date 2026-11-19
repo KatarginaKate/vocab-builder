@@ -1,24 +1,20 @@
 "use client";
 
-import { FormEvent, useCallback, useEffect, useState, useSyncExternalStore } from "react";
+import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import WordsTable from "@/components/WordsTable";
-import WordsPagination from "@/components/WordsPagination";
-import SpriteIcon from "@/components/SpriteIcon";
-import { getWordCategoriesSnapshot, setWordCategories, subscribeToWordCategories } from "@/services/word-category-store";
+import WordsTable from "@/components/Dictionary/WordsTable";
+import WordsPagination from "@/components/Pagination/WordsPagination";
+import SpriteIcon from "@/components/Icons/SpriteIcon";
+import WordModal from "@/components/Modals/WordModal";
+import { categoriesLoaded } from "@/store/word-categories-slice";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
   createWord, deleteWord, DictionaryWord, getOwnWords, getWordCategories,
   getWordStatistics, signOut, updateWord, WordInput,
 } from "@/services/auth";
 import styles from "./page.module.css";
 
-const categoryLabels: Record<string, string> = {
-  verb: "Verb", participle: "Participle", noun: "Noun",
-  adjective: "Adjective", pronoun: "Pronoun", numerals: "Numerals",
-  adverb: "Adverb", preposition: "Preposition", conjunction: "Conjunction",
-  "phrasal verb": "Phrasal verb", "functional phrase": "Functional phrase",
-};
 const categoryOptions: Record<string, string> = {
   verb: "Verb", participle: "Participle", noun: "Noun", adjective: "Adjective",
   pronoun: "Pronoun", numerals: "Numerals", adverb: "Adverb", preposition: "Preposition",
@@ -26,19 +22,24 @@ const categoryOptions: Record<string, string> = {
 };
 const englishPattern = /^[A-Za-z'-]+(?:\s+[A-Za-z'-]+)*$/;
 const ukrainianPattern = /^[\u0410-\u042F\u0430-\u044F\u0404\u0454\u0406\u0456\u0407\u0457\u0490\u0491\s]+$/u;
-const pageSize = 10;
+const pageSize = 8;
 
 export default function DictionaryPage() {
   const router = useRouter();
   const [token, setToken] = useState("");
   const [words, setWords] = useState<DictionaryWord[]>([]);
-  const categories = useSyncExternalStore(subscribeToWordCategories, getWordCategoriesSnapshot, getWordCategoriesSnapshot);
+  const wordsRequestId = useRef(0);
+  const studyTasksRequestId = useRef(0);
+  const dispatch = useAppDispatch();
+  const categories = useAppSelector((state) => state.wordCategories);
   const [keyword, setKeyword] = useState("");
   const [category, setCategory] = useState("");
   const [categoryOpen, setCategoryOpen] = useState(false);
   const [verbType, setVerbType] = useState("");
   const [userName, setUserName] = useState("");
   const [stats, setStats] = useState<{ totalCount?: number; wordsToLearn?: number }>({});
+  const [studyTasks, setStudyTasks] = useState<DictionaryWord[]>([]);
+  const [studyTasksOpen, setStudyTasksOpen] = useState(false);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
@@ -51,6 +52,12 @@ export default function DictionaryPage() {
   const [saving, setSaving] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
+  useEffect(() => {
+    if (!notice) return;
+    const timeoutId = window.setTimeout(() => setNotice(""), 4000);
+    return () => window.clearTimeout(timeoutId);
+  }, [notice]);
+
   const expireSession = useCallback(() => {
     window.localStorage.removeItem("vocab-builder-token");
     window.localStorage.removeItem("vocab-builder-user");
@@ -58,6 +65,7 @@ export default function DictionaryPage() {
   }, [router]);
 
   const loadWords = useCallback(async (activeToken: string, query: string, selectedCategory: string, currentPage: number) => {
+    const requestId = ++wordsRequestId.current;
     setLoading(true);
     setError("");
     try {
@@ -68,15 +76,75 @@ export default function DictionaryPage() {
         page: currentPage,
         limit: pageSize,
       });
-      setWords(result.results ?? []);
-      setTotalPages(Math.max(result.totalPages ?? 1, 1));
+      if (requestId !== wordsRequestId.current) return;
+      let results = result.results ?? [];
+      let totalPages = Math.max(result.totalPages ?? 1, 1);
+      const queryText = query.trim().toLocaleLowerCase();
+      const matchesQuery = (word: DictionaryWord) =>
+        `${word.en} ${word.ua}`.toLocaleLowerCase().includes(queryText);
+
+      if (queryText && !results.some(matchesQuery)) {
+        const firstPage = await getOwnWords(activeToken, {
+          category: selectedCategory || undefined,
+          isIrregular: selectedCategory === "verb" && verbType ? verbType === "irregular" : undefined,
+          page: 1,
+          limit: 100,
+        });
+        const allWords = [...(firstPage.results ?? [])];
+        if (firstPage.totalPages > 1) {
+          const rest = await Promise.all(
+            Array.from({ length: firstPage.totalPages - 1 }, (_, index) =>
+              getOwnWords(activeToken, {
+                category: selectedCategory || undefined,
+                isIrregular: selectedCategory === "verb" && verbType ? verbType === "irregular" : undefined,
+                page: index + 2,
+                limit: 100,
+              }),
+            ),
+          );
+          rest.forEach((pageResult) => allWords.push(...(pageResult.results ?? [])));
+        }
+        if (requestId !== wordsRequestId.current) return;
+        const matchingWords = allWords.filter(matchesQuery);
+        totalPages = Math.max(Math.ceil(matchingWords.length / pageSize), 1);
+        const start = (currentPage - 1) * pageSize;
+        results = matchingWords.slice(start, start + pageSize);
+      }
+
+      setWords(results);
+      setTotalPages(totalPages);
     } catch (requestError) {
+      if (requestId !== wordsRequestId.current) return;
       if (requestError instanceof Error && requestError.message === "SESSION_EXPIRED") return expireSession();
       setError(requestError instanceof Error ? requestError.message : "Could not load your dictionary.");
     } finally {
-      setLoading(false);
+      if (requestId === wordsRequestId.current) setLoading(false);
     }
   }, [expireSession, verbType]);
+
+  const loadStudyTasks = useCallback(async (activeToken: string) => {
+    const requestId = ++studyTasksRequestId.current;
+    try {
+      const firstPage = await getOwnWords(activeToken, { page: 1, limit: 100 });
+      const allWords = [...(firstPage.results ?? [])];
+      if (firstPage.totalPages > 1) {
+        const remainingPages = await Promise.all(
+          Array.from({ length: firstPage.totalPages - 1 }, (_, index) =>
+            getOwnWords(activeToken, { page: index + 2, limit: 100 }),
+          ),
+        );
+        remainingPages.forEach((result) => allWords.push(...(result.results ?? [])));
+      }
+      if (requestId !== studyTasksRequestId.current) return;
+      setStudyTasks(
+        allWords
+          .filter((word) => (word.progress ?? 0) < 100)
+          .sort((first, second) => (first.progress ?? 0) - (second.progress ?? 0)),
+      );
+    } catch {
+      if (requestId === studyTasksRequestId.current) setStudyTasks([]);
+    }
+  }, []);
 
   useEffect(() => {
     const savedToken = window.localStorage.getItem("vocab-builder-token");
@@ -86,11 +154,12 @@ export default function DictionaryPage() {
       const savedUser = window.localStorage.getItem("vocab-builder-user");
       if (savedUser) setUserName(JSON.parse(savedUser).name ?? "");
     } catch { setUserName(""); }
-    void getWordCategories(savedToken).then(setWordCategories).catch((e: unknown) => {
+    void getWordCategories(savedToken).then((loadedCategories) => dispatch(categoriesLoaded(loadedCategories))).catch((e: unknown) => {
       if (e instanceof Error && e.message === "SESSION_EXPIRED") expireSession();
     });
     void getWordStatistics(savedToken).then(setStats).catch(() => setStats({}));
-  }, [expireSession, router]);
+    void loadStudyTasks(savedToken);
+  }, [dispatch, expireSession, loadStudyTasks, router]);
 
   useEffect(() => {
     if (!token) return;
@@ -98,16 +167,10 @@ export default function DictionaryPage() {
     return () => window.clearTimeout(timer);
   }, [token, keyword, category, page, loadWords]);
 
-  useEffect(() => {
-    if (!modalWord) return;
-    const onKeyDown = (event: KeyboardEvent) => { if (event.key === "Escape") setModalWord(false); };
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [modalWord]);
-
   const refresh = () => {
     if (token) void loadWords(token, keyword, category, page);
     if (token) void getWordStatistics(token).then(setStats).catch(() => undefined);
+    if (token) void loadStudyTasks(token);
   };
 
   const onFilterChange = (kind: "keyword" | "category", value: string) => {
@@ -190,17 +253,30 @@ export default function DictionaryPage() {
 
         <section className={styles.content}>
           <div className={styles.toolbar}>
-            <form className={styles.filters} onSubmit={(event) => event.preventDefault()}>
-              <label className={styles.searchField}><span className={styles.visuallyHidden}>Search words</span><input type="search" value={keyword} onChange={(event) => onFilterChange("keyword", event.target.value)} placeholder="Find the word" /><SpriteIcon name="icon-search" className={styles.searchIcon} /></label>
+            <form className={styles.filters} onSubmit={(event) => { event.preventDefault(); setKeyword(keyword.trim()); setPage(1); void loadWords(token, keyword, category, 1); }}>
+              <div className={styles.searchField}><label className={styles.visuallyHidden} htmlFor="word-search">Search words</label><input id="word-search" type="search" value={keyword} onChange={(event) => onFilterChange("keyword", event.target.value)} placeholder="Find the word" /><button type="submit" className={styles.searchButton} aria-label="Search words"><SpriteIcon name="icon-search" className={styles.searchIcon} /></button></div>
               <div className={styles.categoryDropdown} onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setCategoryOpen(false); }} onKeyDown={(event) => { if (event.key === "Escape") setCategoryOpen(false); }}>
                 <button type="button" className={styles.categoryToggle} aria-haspopup="listbox" aria-expanded={categoryOpen} onClick={() => setCategoryOpen(!categoryOpen)}>{category ? categoryOptions[category] ?? category : "Categories"}<SpriteIcon name="icon-chevron-down" className={styles.chevronIcon} /></button>
                 {categoryOpen && <div className={styles.categoryMenu} role="listbox" aria-label="Categories"><button type="button" role="option" aria-selected={!category} onClick={() => { onFilterChange("category", ""); setCategoryOpen(false); }}>All categories</button>{categories.map((item) => <button type="button" role="option" aria-selected={category === item} key={item} onClick={() => { onFilterChange("category", item); setCategoryOpen(false); }}>{categoryOptions[item] ?? item}</button>)}</div>}
               </div>
+              {category === "verb" && <fieldset className={styles.verbFilters}><legend className={styles.visuallyHidden}>Verb type</legend><label><input type="radio" name="verbTypeFilter" checked={verbType === "regular"} onChange={() => { setVerbType("regular"); setPage(1); }} /> Regular</label><label><input type="radio" name="verbTypeFilter" checked={verbType === "irregular"} onChange={() => { setVerbType("irregular"); setPage(1); }} /> Irregular</label></fieldset>}
             </form>
-            <div className={styles.tableActions}><span>To study: <strong>{stats.wordsToLearn ?? stats.totalCount ?? words.length}</strong></span><button type="button" onClick={() => { setModalWord(null); setFormCategory(categories[0] ?? ""); setFormError(""); }}>Add word <SpriteIcon name="icon-plus" className={styles.smallIcon} /></button><Link href="/training">Train oneself <SpriteIcon name="icon-arrow-right" className={styles.smallIcon} /></Link></div>
+            <div className={styles.tableActions}>
+              <div className={styles.studyTasks}>
+                <button type="button" className={styles.studyTasksButton} aria-expanded={studyTasksOpen} aria-controls="study-tasks-list" onClick={() => setStudyTasksOpen(!studyTasksOpen)}>
+                  <span>To study:</span><strong>{stats.wordsToLearn ?? studyTasks.length}</strong>
+                </button>
+                {studyTasksOpen && <div className={styles.studyTasksList} id="study-tasks-list" role="region" aria-label="Words to study">
+                  <strong className={styles.studyTasksTitle}>Statistics</strong>
+                  <p className={styles.studyTasksCount}>Total words: {stats.totalCount ?? "—"}</p>
+                  <strong className={styles.studyTasksTitle}>Tasks to study</strong>
+                  {studyTasks.length > 0 ? <ul>{studyTasks.map((word) => <li key={word._id}><span>{word.en}</span><span>{word.ua}</span></li>)}</ul> : <p>All words are learned.</p>}
+                </div>}
+              </div>
+              <button type="button" onClick={() => { setModalWord(null); setFormCategory(categories[0] ?? ""); setFormError(""); }}>Add word <SpriteIcon name="icon-plus" className={styles.smallIcon} /></button>
+              <Link href="/training">Train oneself <SpriteIcon name="icon-arrow-right" className={styles.smallIcon} /></Link>
+            </div>
           </div>
-          {category === "verb" && <fieldset className={styles.verbFilters}><legend className={styles.visuallyHidden}>Verb type</legend><label><input type="radio" name="verbTypeFilter" checked={verbType === "regular"} onChange={() => { setVerbType("regular"); setPage(1); }} /> Regular</label><label><input type="radio" name="verbTypeFilter" checked={verbType === "irregular"} onChange={() => { setVerbType("irregular"); setPage(1); }} /> Irregular</label></fieldset>}
-
           {error && <p className={styles.error} role="alert">{error}</p>}{notice && <p className={styles.notice} role="status">{notice}<button type="button" onClick={() => setNotice("")} aria-label="Close"><SpriteIcon name="icon-close" className={styles.uiIcon} /></button></p>}
 
           <WordsTable
@@ -215,30 +291,17 @@ export default function DictionaryPage() {
       </div>
 
       {toastError && <div className={styles.toastError} role="alert"><span>{toastError}</span><button type="button" onClick={() => setToastError("")} aria-label="Close"><SpriteIcon name="icon-close" className={styles.uiIcon} /></button></div>}
-      {modalWord !== false && (
-        <div className={styles.backdrop} onMouseDown={(event) => { if (event.target === event.currentTarget) setModalWord(false); }}>
-          <section className={`${styles.modal} ${modalWord ? styles.editModal : ""}`} role="dialog" aria-modal="true" aria-labelledby="word-modal-title">
-            <button type="button" className={styles.modalClose} onClick={() => setModalWord(false)} aria-label="Close"><SpriteIcon name="icon-close" className={styles.uiIcon} /></button>
-            {!modalWord && <><p className={styles.kicker}>NEW WORD</p><h2 id="word-modal-title">Add a word</h2></>}
-            {modalWord && <h2 id="word-modal-title" className={styles.visuallyHidden}>Edit word</h2>}
-            <form className={modalWord ? styles.editForm : styles.wordForm} onSubmit={saveWord}>
-              {!modalWord && <label>Category<select name="category" value={formCategory} onChange={(event) => setFormCategory(event.target.value)} required><option value="" disabled>Select a category</option>{categories.map((item) => <option key={item} value={item}>{categoryLabels[item] ?? item}</option>)}</select></label>}
-              {modalWord ? <>
-                <label className={styles.editField}><input name="ua" defaultValue={modalWord.ua} required aria-label="Ukrainian translation" /><span className={styles.languageLabel}><span>🇺🇦</span> Ukrainian</span></label>
-                <label className={styles.editField}><input name="en" defaultValue={modalWord.en} required aria-label="English word" /><span className={styles.languageLabel}><span>🇬🇧</span> English</span></label>
-              </> : <>
-                <label>English word<input name="en" placeholder="For example, beautiful" required /></label>
-                <label>Ukrainian translation<input name="ua" placeholder="Enter the translation" required /></label>
-              </>}
-              {!modalWord && formCategory === "verb" && <label className={styles.irregularField}><span>Verb type</span><span><input type="radio" name="isIrregular" value="regular" defaultChecked /> Regular</span><span><input type="radio" name="isIrregular" value="irregular" /> Irregular</span></label>}
-              {formError && <p className={styles.error} role="alert">{formError}</p>}
-              <div className={`${styles.modalActions} ${modalWord ? styles.editActions : ""}`}>
-                {modalWord ? <><button type="submit" className={styles.editSaveButton} disabled={saving}>{saving ? "Saving…" : "Save"}</button><button type="button" className={styles.editCancelButton} onClick={() => setModalWord(false)}>Cancel</button></> : <><button type="button" className={styles.cancelButton} onClick={() => setModalWord(false)}>Cancel</button><button type="submit" className={styles.addButton} disabled={saving}>{saving ? "Saving…" : "Add"}</button></>}
-              </div>
-            </form>
-          </section>
-        </div>
-      )}
+      <WordModal
+        open={modalWord !== false}
+        word={modalWord || null}
+        categories={categories}
+        category={formCategory}
+        error={formError}
+        saving={saving}
+        onCategoryChange={setFormCategory}
+        onClose={() => setModalWord(false)}
+        onSubmit={saveWord}
+      />
     </main>
   );
 }

@@ -125,7 +125,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
             aria-pressed={showPassword}
           >
             <svg viewBox="0 0 32 32" aria-hidden="true">
-              <use href={`/sprite.svg#icon-eye-${showPassword ? "open" : "off"}`} />
+              <use href={`/icons/sprite.svg#icon-eye-${showPassword ? "open" : "off"}`} />
             </svg>
           </button>
         </span>

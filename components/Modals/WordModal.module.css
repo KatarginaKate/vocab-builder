@@ -1,0 +1,719 @@
+.backdrop {
+  position: fixed;
+  z-index: 30;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+  background: #12191a38;
+  padding: 12px;
+}
+
+.modal {
+  position: relative;
+  width: min(100%, 460px);
+  border-radius: 16px;
+  background: #fff;
+  padding: 30px;
+  box-shadow: 0 20px 70px #101a1540;
+}
+
+.modal h2 {
+  margin: 0 0 22px;
+  font-size: 25px;
+  letter-spacing: -0.04em;
+}
+
+.modalClose {
+  position: absolute;
+  top: 17px;
+  right: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 50%;
+  background: #f3f6f4;
+  color: #48564e;
+  font: inherit;
+  cursor: pointer;
+}
+
+.modalClose:focus-visible {
+  outline: 3px solid var(--green);
+  outline-offset: 3px;
+}
+
+.modalClose:hover {
+  transform: rotate(90deg) scale(1.08);
+}
+
+.modalClose:active {
+  transform: rotate(90deg) scale(0.94);
+}
+
+.uiIcon {
+  display: block;
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: currentColor;
+}
+
+.wordForm {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.wordForm > label {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  color: #47534c;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.wordForm input:not([type="radio"]),
+.wordForm select {
+  width: 100%;
+  height: 42px;
+  border: 1px solid #dfe7e3;
+  border-radius: 8px;
+  background: #fff;
+  padding: 0 12px;
+  color: #26312c;
+  font: inherit;
+  font-size: 13px;
+  outline: none;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.addButton,
+.cancelButton,
+.editSaveButton,
+.editCancelButton {
+  font: inherit;
+  cursor: pointer;
+}
+
+.addButton {
+  min-height: 40px;
+  border: 0;
+  border-radius: 8px;
+  background: #86aaa0;
+  padding: 0 17px;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.cancelButton {
+  min-height: 40px;
+  border: 1px solid #dfe7e3;
+  border-radius: 8px;
+  background: #fff;
+  padding: 0 16px;
+  color: #4e5a53;
+  font-size: 12px;
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.error {
+  position: relative;
+  margin: 0 0 12px;
+  border: 1px solid #f1caca;
+  border-radius: 9px;
+  background: #fff4f4;
+  padding: 10px 13px;
+  color: #a83e3e;
+  font-size: 12px;
+}
+
+.addModal {
+  box-sizing: border-box;
+  width: min(628px, calc(100vw - 32px));
+  height: min(622px, calc(100dvh - 24px));
+  min-height: min(622px, calc(100dvh - 24px));
+  overflow-y: auto;
+  border-radius: 30px;
+  background: var(--green);
+  padding: 48px 60px 40px;
+  color: var(--white);
+  box-shadow: 0 18px 50px rgba(18, 20, 23, 0.14);
+}
+
+.addModal h2 {
+  margin: 0;
+  color: var(--white);
+  font-weight: 600;
+  font-size: 40px;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.addDescription {
+  width: min(100%, 470px);
+  margin: 20px 0 32px;
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 1.5;
+  color: rgba(252, 252, 252, 0.8);
+}
+
+.addModal .modalClose {
+  top: 20px;
+  right: 20px;
+  width: 32px;
+  height: 32px;
+  border-radius: 0;
+  background: transparent;
+  color: var(--white);
+}
+
+.addModal .wordForm {
+  gap: 0;
+}
+
+.addModal .wordForm > .addCategory {
+  display: block;
+  flex-direction: initial;
+  gap: 0;
+  width: 205px;
+  margin-bottom: 8px;
+  color: var(--white);
+  font-size: 16px;
+}
+
+.addCategory {
+  position: relative;
+}
+
+.addCategoryToggle {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 48px;
+  border: 1px solid rgba(252, 252, 252, 0.3);
+  border-radius: 15px;
+  padding: 0 24px;
+  background: transparent;
+  font: inherit;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--white);
+  outline: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.addCategoryToggle:focus-visible {
+  outline: 3px solid var(--white);
+  outline-offset: 3px;
+}
+
+.addCategoryList {
+  position: absolute;
+  z-index: 5;
+  top: calc(100% + 6px);
+  left: 0;
+  box-sizing: border-box;
+  width: 205px;
+  height: 240px;
+  overflow-y: auto;
+  border-radius: 15px;
+  padding: 12px 24px;
+  background: #fff;
+  box-shadow: 0 4px 47px 0 rgba(18, 20, 23, 0.08);
+}
+
+.addCategoryList button {
+  display: block;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  padding: 5px 0;
+  color: var(--black);
+  font: inherit;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.5;
+  text-align: left;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.addCategoryList button:hover,
+.addCategoryList button:focus-visible {
+  color: var(--green);
+}
+
+.addCategoryList .addCategoryActive {
+  color: var(--green);
+}
+
+.addCategoryChevron {
+  position: absolute;
+  top: 13px;
+  right: 19px;
+  width: 18px;
+  height: 18px;
+  color: var(--white);
+  pointer-events: none;
+}
+
+.addVerbType {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  border: 0;
+  margin: 0 0 12px;
+  padding: 0;
+  color: var(--white);
+  font-size: 16px;
+  line-height: 1.2;
+}
+
+.addVerbType legend {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.addVerbType label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--white);
+  font-weight: 400;
+}
+
+.addVerbType input {
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  margin: 0;
+  border: 2px solid rgba(255, 255, 255, 0.45);
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+}
+
+.addVerbType input:checked {
+  border-color: var(--white);
+  background-color: transparent;
+  background-image: radial-gradient(
+    circle at center,
+    var(--white) 0 6px,
+    transparent 6.5px
+  );
+}
+
+.addVerbType input:focus-visible {
+  outline: 2px solid var(--white);
+  outline-offset: 2px;
+}
+
+.addVerbType small {
+  flex-basis: 100%;
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+.addModal .wordForm > .addWordField {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 32px;
+  margin-bottom: 18px;
+}
+
+.addModal .wordForm .addWordField input {
+  flex: 0 0 332px;
+  width: 354px;
+  height: 56px;
+  border: 1px solid rgba(252, 252, 252, 0.3);
+  border-radius: 15px;
+  background: transparent;
+  padding: 0 16px;
+  color: var(--white);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--white);
+  outline: none;
+}
+
+.addModal .wordForm .addWordField input::placeholder {
+  color: rgba(255, 255, 255, 0.8);
+  opacity: 1;
+}
+
+.addModal .wordForm .addWordField input:focus {
+  border-color: var(--white);
+}
+
+.addLanguage {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--white);
+  font-size: 16px;
+  white-space: nowrap;
+}
+
+.addLanguage svg {
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+}
+
+.addModal .modalActions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.addModal .modalActions button {
+  height: 56px;
+  min-height: 56px;
+  border-radius: 30px;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 1.56;
+  color: var(--black);
+}
+
+.addModal .modalActions .addButton {
+  border: 1px solid var(--white);
+  background: var(--white);
+  color: var(--black);
+}
+
+.addModal .modalActions .addButton:hover {
+  color: var(--green);
+}
+
+.addModal .modalActions .addButton:focus-visible,
+.addModal .modalActions .cancelButton:focus-visible,
+.editActions .editSaveButton:focus-visible,
+.editActions .editCancelButton:focus-visible {
+  outline: 3px solid var(--white);
+  outline-offset: 3px;
+}
+
+.addModal .modalActions .cancelButton {
+  border: 1px solid rgba(252, 252, 252, 0.4);
+  background: transparent;
+  padding: 0 16px;
+  color: var(--white);
+}
+
+.addModal .modalActions .cancelButton:hover {
+  border: 1px solid rgba(252, 252, 252, 0.4);
+  background: var(--white);
+  color: var(--black);
+}
+
+.addModal .error {
+  border-color: rgba(255, 255, 255, 0.55);
+  background: rgba(255, 255, 255, 0.96);
+  color: #b33333;
+}
+
+.editModal {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: min(627px, calc(100vw - 24px));
+  height: min(345px, calc(100dvh - 24px));
+  overflow: hidden;
+  border-radius: 30px;
+  background: var(--green);
+  padding: 48px 60px;
+  color: var(--white);
+  box-shadow: 0 14px 40px #21372f2e;
+}
+
+.editModal .modalClose {
+  top: 20px;
+  right: 20px;
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  color: var(--white);
+}
+
+.editForm {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.editField {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  margin: 0;
+}
+
+.editForm .editField input {
+  width: auto;
+  min-width: 0;
+  flex: 1;
+  height: 53px;
+  border: 1px solid rgba(252, 252, 252, 0.3);
+  border-radius: 15px;
+  background: transparent;
+  padding: 0 16px;
+  color: var(--white);
+  font: inherit;
+  font-size: 16px;
+  line-height: 1.5;
+  outline: none;
+}
+
+.editForm .editField input:focus {
+  border-color: var(--white);
+  box-shadow: 0 0 0 2px #ffffff25;
+}
+
+.languageLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 107px;
+  color: var(--white);
+  font-size: 16px;
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+.languageLabel svg {
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+}
+
+.editModal .error {
+  margin: 0;
+  border-color: #ffffff70;
+  background: #fff;
+  color: #9b3535;
+  font-size: 14px;
+}
+
+.editActions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.editActions button {
+  height: 52px;
+  min-height: 52px;
+  border-radius: 30px;
+  font-size: 16px;
+}
+
+.editSaveButton {
+  border: 0;
+  background: #fff;
+  color: var(--black);
+  font: inherit;
+  font-weight: 700;
+}
+
+.editSaveButton:hover:not(:disabled) {
+  color: var(--green);
+}
+
+.editActions .editCancelButton {
+  box-sizing: border-box;
+  width: 245px;
+  max-width: 100%;
+  height: 56px;
+  min-height: 56px;
+  border: 1px solid rgba(252, 252, 252, 0.4);
+  border-radius: 30px;
+  background: transparent;
+  padding: 14px 92px;
+  color: var(--white);
+  font: inherit;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 1.56;
+}
+
+.editActions .editCancelButton:hover:not(:disabled) {
+  border-color: rgba(252, 252, 252, 0.4);
+  background: var(--white);
+  color: var(--black);
+}
+
+.modalClose,
+.addModal .modalActions button,
+.editActions button {
+  transition: color 150ms ease, background-color 150ms ease, border-color 150ms ease, transform 150ms ease;
+}
+
+.addModal .modalActions button:active:not(:disabled),
+.editActions button:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .modalClose,
+  .addModal .modalActions button,
+  .editActions button {
+    transition: none;
+  }
+
+  .modalClose:hover,
+  .modalClose:active {
+    transform: none;
+  }
+}
+
+.editSaveButton:disabled,
+.addButton:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+@media (max-width: 640px) {
+  .editModal {
+    padding: 40px 24px;
+  }
+
+  .editField {
+    gap: 12px;
+  }
+
+  .languageLabel {
+    min-width: 96px;
+    gap: 6px;
+    font-size: 14px;
+  }
+
+  .languageLabel svg {
+    width: 28px;
+    height: 28px;
+    flex-basis: 28px;
+  }
+
+  .editForm .editField input {
+    padding: 0 10px;
+    font-size: 14px;
+  }
+
+  .editForm {
+    gap: 12px;
+  }
+
+  .editActions {
+    margin-top: 8px;
+  }
+
+  .editActions button {
+    height: 48px;
+    min-height: 48px;
+  }
+
+  .editActions .editCancelButton {
+    padding: 10px 24px;
+    height: 48px;
+    min-height: 48px;
+    font-size: 16px;
+  }
+
+  .addModal {
+    width: min(628px, calc(100vw - 24px));
+    height: auto;
+    max-height: calc(100dvh - 24px);
+    padding: 46px 28px 30px;
+  }
+
+  .addModal h2 {
+    font-size: 30px;
+  }
+
+  .addDescription {
+    margin: 15px 0 24px;
+    font-size: 17px;
+  }
+
+  .addModal .wordForm > .addWordField {
+    gap: 12px;
+  }
+
+  .addModal .wordForm .addWordField input {
+    flex: 1 1 auto;
+    width: 0;
+    min-width: 0;
+  }
+
+  .addLanguage {
+    gap: 5px;
+    font-size: 13px;
+  }
+
+  .addLanguage svg {
+    width: 26px;
+    height: 26px;
+    flex-basis: 26px;
+  }
+}
+
+@media (max-height: 420px) {
+  .editModal {
+    padding-top: 36px;
+    padding-bottom: 20px;
+  }
+
+  .editForm {
+    gap: 8px;
+  }
+
+  .editForm .editField input {
+    height: 44px;
+  }
+
+  .editActions {
+    margin-top: 4px;
+  }
+
+  .editActions button {
+    height: 42px;
+    min-height: 42px;
+  }
+}

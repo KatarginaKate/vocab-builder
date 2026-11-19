@@ -1,4 +1,4 @@
-import styles from "../app/dictionary/page.module.css";
+import styles from "../../app/dictionary/page.module.css";
 
 export default function ProgressBar({ value }: { value: number }) {
   const progress = Math.min(Math.max(value, 0), 100);
