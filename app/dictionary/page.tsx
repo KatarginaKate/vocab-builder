@@ -58,6 +58,17 @@ export default function DictionaryPage() {
     return () => window.clearTimeout(timeoutId);
   }, [notice]);
 
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    if (url.searchParams.get("addWord") === "true") {
+      setModalWord(null);
+      setFormCategory("");
+      setFormError("");
+      url.searchParams.delete("addWord");
+      window.history.replaceState(null, "", `${url.pathname}${url.search}${url.hash}`);
+    }
+  }, []);
+
   const expireSession = useCallback(() => {
     window.localStorage.removeItem("vocab-builder-token");
     window.localStorage.removeItem("vocab-builder-user");
@@ -241,14 +252,18 @@ export default function DictionaryPage() {
             <Link className={styles.activeLink} href="/dictionary" aria-current="page">Dictionary</Link>
             <Link href="/recommend">Recommend</Link>
             <Link href="/training">Training</Link>
-            <div className={styles.mobileUser}><span>{userName || "User"}</span><button type="button" onClick={handleSignOut}>Log out <SpriteIcon name="icon-arrow-right" className={styles.smallIcon} /></button></div>
+            <div className={styles.mobileUser}>
+              <span>{userName || "User"}</span>
+              <span className={styles.avatar} aria-hidden="true"><SpriteIcon name="icon-user" className={styles.avatarIcon} /></span>
+            </div>
+            <button className={styles.mobileLogout} type="button" onClick={handleSignOut}>Log out <SpriteIcon name="icon-arrow-right" className={styles.smallIcon} /></button>
           </nav>
           <div className={styles.userActions}>
             <span className={styles.userName}>{userName || "User"}</span>
             <span className={styles.avatar} aria-hidden="true"><SpriteIcon name="icon-user" className={styles.avatarIcon} /></span>
             <button className={styles.signOut} type="button" onClick={handleSignOut}>Log out <SpriteIcon name="icon-arrow-right" className={styles.smallIcon} /></button>
           </div>
-          <button className={styles.burger} type="button" aria-label={menuOpen ? "Close menu" : "Open menu"} aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}><SpriteIcon name="icon-menu" className={styles.burgerIcon} /></button>
+          <button className={styles.burger} type="button" aria-label={menuOpen ? "Close menu" : "Open menu"} aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}><SpriteIcon name={menuOpen ? "icon-close" : "icon-nav-tab"} className={styles.burgerIcon} /></button>
         </header>
 
         <section className={styles.content}>

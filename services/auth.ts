@@ -67,6 +67,8 @@ export type WordInput = {
   isIrregular?: boolean;
 };
 
+export type TrainingAnswer = { _id: string; en: string; ua: string; task: "en" | "ua" };
+
 async function authorizedMutation(path: string, token: string, method: string, payload?: unknown) {
   const response = await fetch(`${API_BASE_URL}${path}`, {
     method,
@@ -115,6 +117,31 @@ export function getOwnWords(
     search.set("isIrregular", String(params.isIrregular));
   }
   return authorizedFetch(`/words/own?${search.toString()}`, token) as Promise<WordPage>;
+}
+
+export function getRecommendedWords(
+  token: string,
+  params: { keyword?: string; category?: string; isIrregular?: boolean; page?: number; limit?: number } = {},
+) {
+  const search = new URLSearchParams({ page: String(params.page ?? 1), limit: String(params.limit ?? 10) });
+  if (params.keyword) search.set("keyword", params.keyword);
+  if (params.category) search.set("category", params.category);
+  if (params.category === "verb" && params.isIrregular !== undefined) {
+    search.set("isIrregular", String(params.isIrregular));
+  }
+  return authorizedFetch(`/words/all?${search.toString()}`, token) as Promise<WordPage>;
+}
+
+export function addWordToDictionary(token: string, id: string) {
+  return authorizedMutation(`/words/add/${id}`, token, "POST");
+}
+
+export function getTrainingTasks(token: string) {
+  return authorizedFetch("/words/tasks", token) as Promise<{ tasks: DictionaryWord[] }>;
+}
+
+export function submitTrainingAnswers(token: string, answers: TrainingAnswer[]) {
+  return authorizedMutation("/words/answers", token, "POST", answers);
 }
 
 export function createWord(token: string, payload: WordInput) {

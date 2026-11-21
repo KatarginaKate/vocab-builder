@@ -133,6 +133,16 @@
   text-underline-offset: 2px;
 }
 
+.switchPrompt a:hover,
+.switchPrompt a:focus-visible {
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 1.5;
+  text-decoration: underline;
+  text-decoration-skip-ink: none;
+  color: var(--black);
+}
+
 @media (max-width: 1200px) {
   .content {
     gap: 40px;
@@ -363,5 +373,131 @@
   .formCard,
   .loginCard {
     height: auto;
+  }
+}
+
+@media (max-width: 900px) {
+  .content {
+    position: relative;
+    justify-content: center;
+    align-items: center;
+    gap: 0;
+    padding: 24px 0 88px;
+  }
+
+  .formColumn {
+    width: min(100%, 560px);
+    flex: 0 0 auto;
+  }
+
+  .illustration {
+    position: absolute;
+    right: 0;
+    bottom: 28px;
+    left: 0;
+    width: 100%;
+    pointer-events: none;
+  }
+
+  .imageCrop {
+    display: none;
+  }
+
+  .illustrationText {
+    margin: 0;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 650px) {
+  .page {
+    overflow-x: hidden;
+    overflow-y: auto;
+    min-height: 100svh;
+  }
+
+  .shell {
+    width: calc(100% - 32px);
+    min-height: 100svh;
+  }
+
+  .header {
+    min-height: 56px;
+  }
+
+  .content {
+    position: static;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    gap: 16px;
+    padding: 12px 0 24px;
+  }
+
+  .formColumn {
+    width: 100%;
+    flex: 0 0 auto;
+  }
+
+  .formCard,
+  .loginCard {
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    border-radius: 20px;
+    padding: 24px 20px;
+  }
+
+  .formCard h1 {
+    margin-bottom: 8px;
+    font-size: 24px;
+  }
+
+  .intro {
+    margin-bottom: 16px;
+    font-size: 14px;
+    line-height: 1.4;
+  }
+
+  .switchPrompt {
+    margin-top: 12px;
+  }
+
+  .switchPrompt a {
+    font-size: 14px;
+  }
+
+  .illustration {
+    position: relative;
+    right: auto;
+    bottom: auto;
+    left: auto;
+    order: -1;
+    width: 100%;
+    max-height: none;
+    transform: none;
+  }
+
+  .imageCrop {
+    display: block;
+    height: clamp(150px, 58vw, 210px);
+    aspect-ratio: auto;
+  }
+
+  .image {
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .illustrationText {
+    margin-top: 4px;
+    font-size: 12px;
+  }
+
+  .registerIllustration .illustrationText {
+    display: none;
   }
 }

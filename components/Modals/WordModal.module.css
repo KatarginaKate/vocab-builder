@@ -42,19 +42,6 @@
   cursor: pointer;
 }
 
-.modalClose:focus-visible {
-  outline: 3px solid var(--green);
-  outline-offset: 3px;
-}
-
-.modalClose:hover {
-  transform: rotate(90deg) scale(1.08);
-}
-
-.modalClose:active {
-  transform: rotate(90deg) scale(0.94);
-}
-
 .uiIcon {
   display: block;
   width: 24px;
@@ -230,8 +217,8 @@
 }
 
 .addCategoryToggle:focus-visible {
-  outline: 3px solid var(--white);
-  outline-offset: 3px;
+  outline: 2px solid var(--white);
+  outline-offset: 2px;
 }
 
 .addCategoryList {
@@ -244,7 +231,7 @@
   height: 240px;
   overflow-y: auto;
   border-radius: 15px;
-  padding: 12px 24px;
+  padding: 12px 107px 12px 24px;
   background: #fff;
   box-shadow: 0 4px 47px 0 rgba(18, 20, 23, 0.08);
 }
@@ -261,7 +248,7 @@
   font-weight: 500;
   line-height: 1.5;
   text-align: left;
-  white-space: nowrap;
+  white-space: normal;
   cursor: pointer;
 }
 
@@ -330,8 +317,8 @@
   background-color: transparent;
   background-image: radial-gradient(
     circle at center,
-    var(--white) 0 6px,
-    transparent 6.5px
+    var(--white) 0 3px,
+    transparent 3.5px
   );
 }
 
@@ -418,29 +405,11 @@
   color: var(--black);
 }
 
-.addModal .modalActions .addButton:hover {
-  color: var(--green);
-}
-
-.addModal .modalActions .addButton:focus-visible,
-.addModal .modalActions .cancelButton:focus-visible,
-.editActions .editSaveButton:focus-visible,
-.editActions .editCancelButton:focus-visible {
-  outline: 3px solid var(--white);
-  outline-offset: 3px;
-}
-
 .addModal .modalActions .cancelButton {
   border: 1px solid rgba(252, 252, 252, 0.4);
   background: transparent;
   padding: 0 16px;
   color: var(--white);
-}
-
-.addModal .modalActions .cancelButton:hover {
-  border: 1px solid rgba(252, 252, 252, 0.4);
-  background: var(--white);
-  color: var(--black);
 }
 
 .addModal .error {
@@ -450,24 +419,19 @@
 }
 
 .editModal {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  width: min(627px, calc(100vw - 24px));
-  height: min(345px, calc(100dvh - 24px));
-  overflow: hidden;
-  border-radius: 30px;
+  width: min(100%, 300px);
+  border-radius: 13px;
   background: var(--green);
-  padding: 48px 60px;
+  padding: 34px 30px 24px;
   color: var(--white);
   box-shadow: 0 14px 40px #21372f2e;
 }
 
 .editModal .modalClose {
-  top: 20px;
-  right: 20px;
-  width: 32px;
-  height: 32px;
+  top: 8px;
+  right: 9px;
+  width: 24px;
+  height: 24px;
   background: transparent;
   color: var(--white);
 }
@@ -475,13 +439,13 @@
 .editForm {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 8px;
 }
 
 .editField {
   display: flex;
   align-items: center;
-  gap: 28px;
+  gap: 8px;
   margin: 0;
 }
 
@@ -489,15 +453,14 @@
   width: auto;
   min-width: 0;
   flex: 1;
-  height: 53px;
-  border: 1px solid rgba(252, 252, 252, 0.3);
-  border-radius: 15px;
+  height: 28px;
+  border: 1px solid #ffffff35;
+  border-radius: 8px;
   background: transparent;
-  padding: 0 16px;
+  padding: 0 8px;
   color: var(--white);
   font: inherit;
-  font-size: 16px;
-  line-height: 1.5;
+  font-size: 9px;
   outline: none;
 }
 
@@ -509,18 +472,17 @@
 .languageLabel {
   display: flex;
   align-items: center;
-  gap: 8px;
-  min-width: 107px;
-  color: var(--white);
-  font-size: 16px;
+  gap: 4px;
+  min-width: 70px;
+  color: #f7fbf9;
+  font-size: 8px;
   font-weight: 400;
   white-space: nowrap;
 }
 
 .languageLabel svg {
-  width: 32px;
-  height: 32px;
-  flex: 0 0 32px;
+  width: 14px;
+  height: 14px;
 }
 
 .editModal .error {
@@ -528,80 +490,36 @@
   border-color: #ffffff70;
   background: #fff;
   color: #9b3535;
-  font-size: 14px;
+  font-size: 10px;
 }
 
 .editActions {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-top: 14px;
+  display: flex;
+  gap: 5px;
+  margin-top: 6px;
 }
 
 .editActions button {
-  height: 52px;
-  min-height: 52px;
-  border-radius: 30px;
-  font-size: 16px;
+  flex: 1;
+  height: 28px;
+  min-height: 28px;
+  border-radius: 18px;
+  font-size: 9px;
 }
 
 .editSaveButton {
   border: 0;
   background: #fff;
-  color: var(--black);
+  color: #273a33;
   font: inherit;
-  font-weight: 700;
+  font-weight: 650;
 }
 
-.editSaveButton:hover:not(:disabled) {
-  color: var(--green);
-}
-
-.editActions .editCancelButton {
-  box-sizing: border-box;
-  width: 245px;
-  max-width: 100%;
-  height: 56px;
-  min-height: 56px;
-  border: 1px solid rgba(252, 252, 252, 0.4);
-  border-radius: 30px;
+.editCancelButton {
+  border: 1px solid #ffffff50;
   background: transparent;
-  padding: 14px 92px;
-  color: var(--white);
+  color: #fff;
   font: inherit;
-  font-weight: 700;
-  font-size: 18px;
-  line-height: 1.56;
-}
-
-.editActions .editCancelButton:hover:not(:disabled) {
-  border-color: rgba(252, 252, 252, 0.4);
-  background: var(--white);
-  color: var(--black);
-}
-
-.modalClose,
-.addModal .modalActions button,
-.editActions button {
-  transition: color 150ms ease, background-color 150ms ease, border-color 150ms ease, transform 150ms ease;
-}
-
-.addModal .modalActions button:active:not(:disabled),
-.editActions button:active:not(:disabled) {
-  transform: scale(0.98);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .modalClose,
-  .addModal .modalActions button,
-  .editActions button {
-    transition: none;
-  }
-
-  .modalClose:hover,
-  .modalClose:active {
-    transform: none;
-  }
 }
 
 .editSaveButton:disabled,
@@ -611,51 +529,6 @@
 }
 
 @media (max-width: 640px) {
-  .editModal {
-    padding: 40px 24px;
-  }
-
-  .editField {
-    gap: 12px;
-  }
-
-  .languageLabel {
-    min-width: 96px;
-    gap: 6px;
-    font-size: 14px;
-  }
-
-  .languageLabel svg {
-    width: 28px;
-    height: 28px;
-    flex-basis: 28px;
-  }
-
-  .editForm .editField input {
-    padding: 0 10px;
-    font-size: 14px;
-  }
-
-  .editForm {
-    gap: 12px;
-  }
-
-  .editActions {
-    margin-top: 8px;
-  }
-
-  .editActions button {
-    height: 48px;
-    min-height: 48px;
-  }
-
-  .editActions .editCancelButton {
-    padding: 10px 24px;
-    height: 48px;
-    min-height: 48px;
-    font-size: 16px;
-  }
-
   .addModal {
     width: min(628px, calc(100vw - 24px));
     height: auto;
@@ -691,29 +564,5 @@
     width: 26px;
     height: 26px;
     flex-basis: 26px;
-  }
-}
-
-@media (max-height: 420px) {
-  .editModal {
-    padding-top: 36px;
-    padding-bottom: 20px;
-  }
-
-  .editForm {
-    gap: 8px;
-  }
-
-  .editForm .editField input {
-    height: 44px;
-  }
-
-  .editActions {
-    margin-top: 4px;
-  }
-
-  .editActions button {
-    height: 42px;
-    min-height: 42px;
   }
 }

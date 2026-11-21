@@ -92,7 +92,12 @@ export default function WordsTable({ words, loading, onEdit, onDelete }: {
     }),
     columnHelper.accessor("category", {
       header: "Category",
-      cell: (info) => categoryLabels[info.getValue()] ?? info.getValue(),
+      cell: (info) => {
+        const label = categoryLabels[info.getValue()] ?? info.getValue();
+        return label === "Functional phrase"
+          ? <span className={styles.functionalPhrase}>{label}</span>
+          : label;
+      },
     }),
     columnHelper.accessor((word) => word.progress ?? 0, {
       id: "progress",

@@ -53,6 +53,11 @@
 <symbol id="icon-menu" viewBox="0 0 24 24">
 <path d="M4 6h16M4 12h16M4 18h16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.8"></path>
 </symbol>
+<symbol id="icon-nav-tab" viewBox="0 0 40 28">
+<line x1="7.58691" y1="4.43939" x2="38.5" y2="4.43939" stroke-width="3" stroke-linecap="round" stroke="#121417"></line>
+<line x1="7.58691" y1="21.4091" x2="38.5" y2="21.4091" stroke-width="3" stroke-linecap="round" stroke="#121417"></line>
+<line x1="17.1523" y1="12.9242" x2="38.5002" y2="12.9242" stroke-width="3" stroke-linecap="round" stroke="#121417"></line>
+</symbol>
 <symbol id="icon-user" viewBox="0 0 24 24">
 <circle cx="12" cy="8" r="3.2" fill="none" stroke="currentColor" stroke-width="1.7"></circle>
 <path d="M5.5 20c.5-3.1 2.9-5 6.5-5s6 1.9 6.5 5" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.7"></path>

@@ -41,7 +41,7 @@ export default function AuthPage({ mode }: AuthPageProps) {
             </div>
           </div>
 
-          <div className={styles.illustration}>
+          <div className={`${styles.illustration} ${isRegister ? styles.registerIllustration : ""}`}>
             <div className={styles.imageCrop}>
               <Image
                 className={styles.image}
